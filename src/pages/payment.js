@@ -43,6 +43,9 @@ const Payments = () => {
 
     useEffect(() => {
         fetchProducts();
+        localStorage.removeItem('paymentVerification1');
+        localStorage.removeItem('paymentVerification');
+
     }, []);
 
     const fetchProducts = async () => {
@@ -240,24 +243,11 @@ const Payments = () => {
                 const res = await axios.post(`api/payment/status`, {
                     transaction_id: paymentlinkdata.transaction_id
                 });
-                // const res = {
-                //     data: {
-                //         success: true,
-                //         data1: {
-                //             status: "success",
-                //             message: "Transaction details retrieved successfully.",
-                //             data: {
-                //                 transaction_status: "pending",
-                //                 request_id: "TXN94087",
-                //                 transaction_id: "064076843766693",
-                //                 amount: 100
-                //             }
-                //         }
-                //     }
-                // };
 
+                console.log("res.data.data1.transaction_status", res.data.data.data.transaction_id);
+                localStorage.setItem("paymentVerification1", res.data.data.data.transaction_status + "==" + res.data.data.data.transaction_id)
                 // Check for success
-                if (res.data.data.transaction_status === "success") {
+                if (res.data.data1.data.transaction_status === "success") {
                     isVerified = true;
 
                     const paymentData = {
@@ -381,6 +371,8 @@ const Payments = () => {
             <div style={{
                 background: "#fff", borderRadius: 16, padding: 32, minWidth: 320, maxWidth: 400, boxShadow: "0 8px 32px rgba(0,0,0,0.15)", textAlign: "center"
             }}>
+
+                {localStorage.getItem("paymentVerification1")}
                 {status === "verifying" && (
                     <>
                         <div style={{ marginBottom: 16 }}>
