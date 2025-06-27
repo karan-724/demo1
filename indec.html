@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment Initiation</title>
+</head>
+<body>
+  <h1>Initiate Payment</h1>
+  <button id="payButton">Pay Now</button>
+  <pre id="response"></pre>
+ <script>
+  function generateRequestId() {
+    const timestamp = Date.now(); // current time in ms
+    const random = Math.floor(Math.random() * 100000); // 5-digit random number
+    return `TXN${timestamp}${random}`;
+  }
+
+  document.getElementById("payButton").addEventListener("click", async function () {
+    const requestId = generateRequestId(); // 👈 Generate new request_id
+
+    const headersList = {
+      "Accept": "/",
+      "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+      "token": "0c5ec61bd2cf3ad5a74519eaa43ebd05dd8b223e50adbfaae66bae33b3b67e65",
+      "Content-Type": "application/json"
+    };
+
+    const bodyContent = JSON.stringify({
+      "request_id": requestId,
+      "amount": 100,
+      "first_name": "John",
+      "last_name": "Doe",
+      "email": "customer@gmail.com",
+      "mobile": "9876543210",
+      "remark": "Order #1234",
+      "return_url": "https://yourdomain.com/payment/callback"
+    });
+
+    try {
+      const response = await fetch("https://finziopay.com/api/payment/initiate", {
+        method: "POST",
+        body: bodyContent,
+        headers: headersList
+      });
+
+      const data = await response.json();
+            window.location.href = data.data.payment_link;
+    } catch (error) {
+      console.error("Error:", error);
+      document.getElementById("response").textContent = "Request failed: " + error;
+    }
+  });
+</script>
+
+</body>
+</html>

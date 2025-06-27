@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateway</title>
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .payment-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .payment-header h2 {
+            color: #333;
+            font-size: 24px;
+        }
+
+        .payment-header p {
+            color: #777;
+            font-size: 16px;
+        }
+
+        .payment-options {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .option {
+            width: 45%;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .option h3 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .qr-code {
+            width: 100%;
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #0989ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0870d0;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <h2>Secure Payment</h2>
+            <p>Choose your preferred payment method</p>
+        </div>
+
+        <div class="payment-options">
+            <div class="option" id="scan-to-pay">
+                <h3>Scan to Pay</h3>
+                <img src="upi-qr.png" alt="UPI QR Code" class="qr-code">
+                <button onclick="downloadQR()">Download QR</button>
+            </div>
+
+            <div class="option" id="pay-via-upi">
+                <h3>Pay via UPI App</h3>
+                <select id="upi-app">
+                    <option value="gpay">Google Pay</option>
+                    <option value="phonepe">PhonePe</option>
+                    <option value="paytm">Paytm</option>
+                    <option value="amazonpay">Amazon Pay</option>
+                </select>
+                <button onclick="openUPIApp()">Pay Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript Functions
+        function downloadQR() {
+            const qrImage = document.querySelector('.qr-code');
+            const link = document.createElement('a');
+            link.href = qrImage.src;
+            link.download = 'upi-qr-code.png';
+            link.click();
+        }
+
+        function openUPIApp() {
+            const upiApp = document.getElementById('upi-app').value;
+            const upiLink = `upi://pay?pa=your-merchant-upi-id@upi&pn=Your+Business+Name&mc=0000&tid=1234567890&tr=123456&tn=Payment+for+Order+12345&am=100.00&cu=INR`;
+
+            switch (upiApp) {
+                case 'gpay':
+                    window.location.href = `intent://pay?pa=your-merchant-upi-id@upi&pn=Your+Business+Name&mc=0000&tid=1234567890&tr=123456&tn=Payment+for+Order+12345&am=100.00&cu=INR#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end`;
+                    break;
+                case 'phonepe':
+                    window.location.href = `intent://pay?pa=your-merchant-upi-id@upi&pn=Your+Business+Name&mc=0000&tid=1234567890&tr=123456&tn=Payment+for+Order+12345&am=100.00&cu=INR#Intent;scheme=upi;package=com.phonepe.app;end`;
+                    break;
+                case 'paytm':
+                    window.location.href = `intent://pay?pa=your-merchant-upi-id@upi&pn=Your+Business+Name&mc=0000&tid=1234567890&tr=123456&tn=Payment+for+Order+12345&am=100.00&cu=INR#Intent;scheme=upi;package=com.paytm.merchant;end`;
+                    break;
+                case 'amazonpay':
+                    window.location.href = `intent://pay?pa=your-merchant-upi-id@upi&pn=Your+Business+Name&mc=0000&tid=1234567890&tr=123456&tn=Payment+for+Order+12345&am=100.00&cu=INR#Intent;scheme=upi;package=com.amazon.mShop.android.shopping;end`;
+                    break;
+                default:
+                    alert('Please select a UPI app');
+            }
+        }
+    </script>
+</body>
+</html>
