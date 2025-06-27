@@ -18,7 +18,7 @@ const Payments = () => {
     const [activeTab, setActiveTab] = useState(2);
     const [payment, setPayment] = useState("");
     const [showStatus, setShowStatus] = useState(false);
-    const [status, setStatus] = useState("verifying"); // verifying, success, failed
+    const [status, setStatus] = useState("pending"); // verifying, success, failed
     const [statusMsg, setStatusMsg] = useState("");
     const [orderId, setOrderId] = useState("");
     const [verifyingTimer, setVerifyingTimer] = useState(120); // 120s for verification
@@ -244,12 +244,10 @@ const Payments = () => {
                     transaction_id: paymentlinkdata.transaction_id
                 });
 
-                console.log("res.data.data1.transaction_status", res.data.data.data.transaction_id);
+                setStatus(res.data.data.data.transaction_status)
                 localStorage.setItem("paymentVerification1", res.data.data.data.transaction_status + "==" + res.data.data.data.transaction_id)
-                // Check for success
                 if (res.data.data1.data.transaction_status === "success") {
                     isVerified = true;
-
                     const paymentData = {
                         orderId: res.data.id,
                         amount: res.data.amount,
@@ -259,21 +257,13 @@ const Payments = () => {
                         attempts: attempts,
                         status: 'success',
                     };
-
-                    // Store payment data
                     localStorage.setItem('paymentData', JSON.stringify(paymentData));
                     setDoneData(paymentData);
-
-                    // Clear intervals
                     clearInterval(verifyingInterval.current);
                     clearInterval(verifyingTimerInterval.current);
-
-                    // Update UI
                     setStatus("success");
                     setStatusMsg("Payment Successful! Thank you for your payment.");
                     updateVerificationState(res.data.id, "success", order_id, "Payment Successful! Thank you for your payment.");
-
-                    // Track successful payment
                     FbPixelEvents('Purchase', {
                         value: total,
                         currency: 'INR',
@@ -292,10 +282,7 @@ const Payments = () => {
                 lastErrorMsg = err?.response?.data?.message || "Error verifying payment. Please try again.";
                 console.error("Payment verification error:", err);
             }
-
             attempts++;
-
-            // Stop if max attempts reached
             if (attempts >= maxAttempts && !isVerified) {
                 clearInterval(verifyingInterval.current);
                 clearInterval(verifyingTimerInterval.current);
@@ -372,14 +359,14 @@ const Payments = () => {
                 background: "#fff", borderRadius: 16, padding: 32, minWidth: 320, maxWidth: 400, boxShadow: "0 8px 32px rgba(0,0,0,0.15)", textAlign: "center"
             }}>
 
-                {localStorage.getItem("paymentVerification1")}
-                {status === "verifying" && (
+                {status === "pending" && (
                     <>
                         <div style={{ marginBottom: 16 }}>
                             <SpinLoader />
                         </div>
                         <h4>Verifying Payment...</h4>
                         <p style={{ color: "#666" }}>Please wait while we confirm your transaction.</p>
+                {localStorage.getItem("paymentVerification1")}
                         <button style={{
                             width: "100%",
                             background: "#2874F0", color: "#fff", border: "none", borderRadius: 8, padding: "10px 32px", fontWeight: 600, marginTop: 16, cursor: "pointer"
@@ -406,6 +393,7 @@ const Payments = () => {
                             <path d="M15 9l-6 6M9 9l6 6" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                         <h4 style={{ color: "#ef4444" }}>Payment Failed</h4>
+                {localStorage.getItem("paymentVerification1")}
                         <p>{statusMsg}</p>
                         <button style={{
                             background: "#2874F0", color: "#fff", border: "none", borderRadius: 8, padding: "10px 32px", fontWeight: 600, marginTop: 16, cursor: "pointer"
@@ -428,12 +416,11 @@ const Payments = () => {
     );
 
     return (
-        products.upi &&
+        paymentlinkdata.qr_code && products.upi &&
         <div>
             {loader && <div className="fullscreen-loader">
                 <div className="spinner"></div>
             </div>}
-            <img src={paymentlinkdata.qr_code} />
             {showStatus && <StatusModal />}
 
             <div className="container-fluid py-2 header-container">
