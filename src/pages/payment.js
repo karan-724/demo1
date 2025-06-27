@@ -357,7 +357,7 @@ const Payments = () => {
         let products = JSON.parse(localStorage.getItem("d1"))
         setLoader(true);
 
-        const upiLink = paymentlinkdata.upi_link.trim();
+        const upiLink = payment
         setTimeout(() => {
             window.open(upiLink, '_blank');
             setLoader(false);
