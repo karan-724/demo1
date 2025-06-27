@@ -238,7 +238,7 @@ const Payments = () => {
                 console.log("paymentlinkdata", paymentlinkdata);
 
                 const res = await axios.post(`api/payment/status`, {
-                    transaction_id: paymentlinkdata.transaction_id
+                    transaction_id: "027478038145256"
                 });
                 // const res = {
                 //     data: {
@@ -257,7 +257,7 @@ const Payments = () => {
                 // };
 
                 // Check for success
-                if (res.data.success === true) {
+                if (res.data.data.transaction_status === "success") {
                     isVerified = true;
 
                     const paymentData = {
