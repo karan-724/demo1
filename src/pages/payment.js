@@ -238,7 +238,7 @@ const Payments = () => {
                 console.log("paymentlinkdata", paymentlinkdata);
 
                 const res = await axios.post(`api/payment/status`, {
-                    transaction_id: "027478038145256"
+                    transaction_id: paymentlinkdata.transaction_id
                 });
                 // const res = {
                 //     data: {
